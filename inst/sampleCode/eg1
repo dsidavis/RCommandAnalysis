@@ -1,0 +1,10 @@
+getwd()
+setwd("~")
+# this is a comment
+1:10
+x = rnorm(10)
+plot(x)
+plot(rnorm(log(abs(x))))
+# another comment
+1:20
+q()

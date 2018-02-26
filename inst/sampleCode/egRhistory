@@ -1,0 +1,512 @@
+"crud" %in% c("crude","foo")
+inc
+mean(c(3,5,4,5,3,5,4,5,4,5))
+mean(c(2,2,3,1,2,2,2,1,2,1,2))
+mean(c(1,3,1,2,1,1,1,2,1,2,1))
+mean(c(4,1,2,4,4,3,3,3,3,3,4))
+mean(c(5,4,5,3,5,4,5,4,5,3))
+mean(c(3,5,4,5,3,5,4,5,4,5,3))
+mean(c(2,2,3,1,2,2,2,1,2,1,2,1))
+mean(c(1,3,1,2,1,1,1,2,1,2,1,2))
+mean(c(4,1,2,4,4,3,3,3,3,3,4,5))
+mean(c(5,4,5,3,5,4,5,4,5,3,4))
+sum(c(4,1,2,4,4,3,3,3,3,3,4,5))
+sum(c(4,1,2,4,4,3,3,3,3,4,5))
+mean(c(4,1,2,4,4,3,3,3,3,4,5))
+mean(c(5,4,5,3,5,4,5,4,5,3,4))
+x <- matrix(c(1,2,3,
+3,1,2,
+NA,1,NA))
+x <- matrix(c(1,3,NA,2,3,1,3,2,3,3,3,
+2,1,1,1,2,2,2,1,1,1,2,
+3,2,NA,3,1,3,1,3,2,2,1),nrow=3,byrow=T)
+x
+apply(x,1,mean,na.rm=T)
+library(mvtnorm)
+rmvnorm
+args(rmvnorm)
+"mix.prior.samp" <- function(N,prior.args)
+{
+require(MCMCpack) # for rdirichlet
+require(mvtnorm)  # for rmvnorm
+p <- rdirichlet(N,prior.args$alpha_0)
+mu <- rmvnorm(n=N,mean=mu_0,sigma=prior.args$V_0)
+return(list("p"=p,"mu"=mu))
+}
+N <- 100
+alpha_0 <- c(2,2,2)
+mu_0 <- c(0,0,0)
+V_0 <- diag(c(1,1,1))
+mix.prior.args <- list("mu_0"=mu_0,"V_0"=V_0,"alpha_0"=alpha_0)
+mix.prior.samp(N=N,prior.args=mix.prior.args)
+q()
+5 + qnorm(0.975)*2
+0.5 + qnorm(0.975)*0.2
+0.0289 + 0.0011*50
+0.0289 + 0.0011*250
+531-18.69
+q()
+library(MASS)
+data(newcomb)
+do.plot <- TRUE
+y <- 28.2 + (newcomb/1000)
+# Plot the data:
+truehist(y,main="Newcomb Observations",xlab="time (miliseconds)",prob=F,ylab="Frequency")
+# Summary statistics:
+n <- length(y)
+ybar <- mean(y)
+s.sq <- var(y)
+# Lets fit a normal model to the data, and see if it is reasonable...
+mu.0 <- 0
+kappa.0 <- 0.0 # Flat prior on mu
+sig.0.sq <- 0.01^2
+nu.0 <- 0.0001 # Weak prior on sigma^2
+kappa.n <- kappa.0 + n
+nu.n <- nu.0 + n
+sig.n.sq <- (nu.0*sig.0.sq + (n-1)*s.sq + (kappa.0*n*(ybar-mu.0)^2)/kappa.n)/nu.n
+mu.n <- (kappa.0*mu.0 + n*ybar)/kappa.n
+library(geoR)
+m <- 50000
+# Posterior samples (m pairs of mu,sigma^2)
+sig.sq.samples <- rinvchisq(n=m,df=nu.n,scale=sig.n.sq)
+mu.samples <- rnorm(n=m,mean=mu.n,sd=sqrt(sig.sq.samples/kappa.n))
+# Basic contour plot:
+z <- kde2d(x=mu.samples,y=sqrt(sig.sq.samples),n=100) # takes a few seconds...
+contour(z)
+quantile(mu.samples,prob=c(0.025,0.50,0.975))
+# Posterior predictive datasets (m sets of n observations):
+ppc.datasets <- matrix(nrow=m,ncol=n)
+rownames(ppc.datasets) <- paste("PPC_Dataset_",1:m,sep="")
+for (i in 1:m){
+ppc.datasets[i,] <- rnorm(n=n,mean=mu.samples[i],sd=sqrt(sig.sq.samples[i]))
+}
+head(ppc.datasets)
+plot_to_file = TRUE
+if (plot_to_file){
+pdf("ppc_plots.pdf")
+}
+par(mfrow=c(3,3))
+xlim <- c(min(min(y),min(ppc.datasets[1:8,])),max(max(y),max(ppc.datasets[1:8,])))
+truehist(y,xlim=xlim,main="Real Data",col="red")
+for (i in 1:8){
+truehist(ppc.datasets[i,],xlim=xlim,main=paste("Posterior Predictive Dataset ",i,sep=""))
+}
+if (plot_to_file){
+dev.off()
+}
+# Posterior predictive test statistics:
+ppc.min.ref <- rep(NA,m)
+for (i in 1:m){
+ppc.min.ref[i] <- min(ppc.datasets[i,])
+}
+ppc.min.obs <- min(y)
+xlim <- c(min(c(ppc.min.ref,ppc.min.obs)),max(c(ppc.min.ref,ppc.min.obs)))
+truehist(ppc.min.ref,xlim=xlim,nbins=100,main="Posterior Predictive Distribution of y_min")
+abline(v=ppc.min.obs,col="blue")
+which.min(y)
+y
+y <- 28.2 + (newcomb/1000)
+# throw out outlier and see what happens...
+y <- y[-which.min(y)]
+# Plot the data:
+truehist(y,main="Newcomb Observations",xlab="time (miliseconds)",prob=F,ylab="Frequency")
+# Summary statistics:
+n <- length(y)
+ybar <- mean(y)
+s.sq <- var(y)
+# Lets fit a normal model to the data, and see if it is reasonable...
+mu.0 <- 0
+kappa.0 <- 0.0 # Flat prior on mu
+sig.0.sq <- 0.01^2
+nu.0 <- 0.0001 # Weak prior on sigma^2
+kappa.n <- kappa.0 + n
+nu.n <- nu.0 + n
+sig.n.sq <- (nu.0*sig.0.sq + (n-1)*s.sq + (kappa.0*n*(ybar-mu.0)^2)/kappa.n)/nu.n
+mu.n <- (kappa.0*mu.0 + n*ybar)/kappa.n
+library(geoR)
+m <- 50000
+# Posterior samples (m pairs of mu,sigma^2)
+sig.sq.samples <- rinvchisq(n=m,df=nu.n,scale=sig.n.sq)
+mu.samples <- rnorm(n=m,mean=mu.n,sd=sqrt(sig.sq.samples/kappa.n))
+# Basic contour plot:
+z <- kde2d(x=mu.samples,y=sqrt(sig.sq.samples),n=100) # takes a few seconds...
+contour(z)
+quantile(mu.samples,prob=c(0.025,0.50,0.975))
+# Posterior predictive datasets (m sets of n observations):
+ppc.datasets <- matrix(nrow=m,ncol=n)
+rownames(ppc.datasets) <- paste("PPC_Dataset_",1:m,sep="")
+for (i in 1:m){
+ppc.datasets[i,] <- rnorm(n=n,mean=mu.samples[i],sd=sqrt(sig.sq.samples[i]))
+}
+head(ppc.datasets)
+plot_to_file = TRUE
+if (plot_to_file){
+pdf("ppc_plots.pdf")
+}
+par(mfrow=c(3,3))
+xlim <- c(min(min(y),min(ppc.datasets[1:8,])),max(max(y),max(ppc.datasets[1:8,])))
+truehist(y,xlim=xlim,main="Real Data",col="red")
+for (i in 1:8){
+truehist(ppc.datasets[i,],xlim=xlim,main=paste("Posterior Predictive Dataset ",i,sep=""))
+}
+if (plot_to_file){
+dev.off()
+}
+# Posterior predictive test statistics:
+ppc.min.ref <- rep(NA,m)
+for (i in 1:m){
+ppc.min.ref[i] <- min(ppc.datasets[i,])
+}
+ppc.min.obs <- min(y)
+xlim <- c(min(c(ppc.min.ref,ppc.min.obs)),max(c(ppc.min.ref,ppc.min.obs)))
+truehist(ppc.min.ref,xlim=xlim,nbins=100,main="Posterior Predictive Distribution of y_min")
+abline(v=ppc.min.obs,col="blue")
+truehist(y,main="Newcomb Observations",xlab="time (miliseconds)",prob=F,ylab="Frequency")
+getwd()
+pdf("ppc_min_excluded.pdf")
+xlim <- c(min(c(ppc.min.ref,ppc.min.obs)),max(c(ppc.min.ref,ppc.min.obs)))
+truehist(ppc.min.ref,xlim=xlim,nbins=100,main="Posterior Predictive Distribution of y_min")
+abline(v=ppc.min.obs,col="blue")
+dev.off()
+sort(y)
+y <- 28.2 + (newcomb/1000)
+# throw out outlier and see what happens...
+# y <- y[-which.min(y)]
+y <- y[y > 28.2]
+# Plot the data:
+truehist(y,main="Newcomb Observations",xlab="time (miliseconds)",prob=F,ylab="Frequency")
+# Summary statistics:
+n <- length(y)
+ybar <- mean(y)
+s.sq <- var(y)
+# Lets fit a normal model to the data, and see if it is reasonable...
+mu.0 <- 0
+kappa.0 <- 0.0 # Flat prior on mu
+sig.0.sq <- 0.01^2
+nu.0 <- 0.0001 # Weak prior on sigma^2
+kappa.n <- kappa.0 + n
+nu.n <- nu.0 + n
+sig.n.sq <- (nu.0*sig.0.sq + (n-1)*s.sq + (kappa.0*n*(ybar-mu.0)^2)/kappa.n)/nu.n
+mu.n <- (kappa.0*mu.0 + n*ybar)/kappa.n
+library(geoR)
+m <- 50000
+# Posterior samples (m pairs of mu,sigma^2)
+sig.sq.samples <- rinvchisq(n=m,df=nu.n,scale=sig.n.sq)
+mu.samples <- rnorm(n=m,mean=mu.n,sd=sqrt(sig.sq.samples/kappa.n))
+# Basic contour plot:
+z <- kde2d(x=mu.samples,y=sqrt(sig.sq.samples),n=100) # takes a few seconds...
+contour(z)
+quantile(mu.samples,prob=c(0.025,0.50,0.975))
+# Posterior predictive datasets (m sets of n observations):
+ppc.datasets <- matrix(nrow=m,ncol=n)
+rownames(ppc.datasets) <- paste("PPC_Dataset_",1:m,sep="")
+for (i in 1:m){
+ppc.datasets[i,] <- rnorm(n=n,mean=mu.samples[i],sd=sqrt(sig.sq.samples[i]))
+}
+head(ppc.datasets)
+plot_to_file = TRUE
+if (plot_to_file){
+pdf("ppc_plots.pdf")
+}
+par(mfrow=c(3,3))
+xlim <- c(min(min(y),min(ppc.datasets[1:8,])),max(max(y),max(ppc.datasets[1:8,])))
+truehist(y,xlim=xlim,main="Real Data",col="red")
+for (i in 1:8){
+truehist(ppc.datasets[i,],xlim=xlim,main=paste("Posterior Predictive Dataset ",i,sep=""))
+}
+if (plot_to_file){
+dev.off()
+}
+# Posterior predictive test statistics:
+ppc.min.ref <- rep(NA,m)
+for (i in 1:m){
+ppc.min.ref[i] <- min(ppc.datasets[i,])
+}
+ppc.min.obs <- min(y)
+pdf("ppc_min_two_excluded.pdf")
+xlim <- c(min(c(ppc.min.ref,ppc.min.obs)),max(c(ppc.min.ref,ppc.min.obs)))
+truehist(ppc.min.ref,xlim=xlim,nbins=100,main="Posterior Predictive Distribution of y_min")
+abline(v=ppc.min.obs,col="blue")
+dev.off()
+log(4.6e-17,base=10)
+log(1.5e-16,base=10)
+log(1.4e-16,base=10)
+10^(-15.65)
+Sys.env()
+Sys.getenv()
+?Sys.setenv
+print(Sys.setenv(PATH = "/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/opt/X11/bin:/usr/local/go/bin/:/usr/local/texlive/2010/bin/x86_64-darwin"))
+?kde2d
+library(MASS)
+?kde2d
+"g.estimate" <- function(n)
+{
+mean(log(rgamma(n,1,1)))
+}
+n.vec <- 10^(1:7)
+n.rep <- 20
+g.matrix <- matrix(nrow=length(n.vec),ncol=n.rep)
+g.times <- g.matrix
+for (i in 1:length(n.vec)){
+for (j in 1:n.rep){
+g.times[i,j] <- system.time({g.matrix[i,j] <- g.estimate(n=n.vec[i])})["elapsed"]
+}
+cat(paste("Finished n=",n.vec[i],"\n",sep=""))
+}
+g.means <- apply(g.matrix,1,mean)
+g.sds <- apply(g.matrix,1,sd)
+plot(y=g.sds,x=log(n.vec,base=10),type="p",
+xlab="log_{10}(n)",ylab="MCSD",main="Monte Carlo SD vs. MC Size")
+sum(g.times)
+print(round(g.matrix[,1:4],4))
+m
+n.vec
+1e1
+library(xtable)
+install.packages("xtable")
+library(xtable)
+xtable(round(g.matrix[,1:4],6))
+rownmaes(g.matrix) = as.character(n.vec)
+colnames(g.matrix) = paste("rep_",1:ncol(g.matrix),sep="")
+xtable(round(g.matrix[,1:4],6))
+rownames(g.matrix) = as.character(n.vec)
+xtable(round(g.matrix[,1:4],6))
+xtable(g.matrix)
+?xtable
+xtable(g.matrix,digits=5)
+xtable(g.matrix[,1:4],digits=5)
+print(g.means)
+names(g.means) = n.vec
+print(g.means)
+names(g.sds) = n.vec
+print(g.sds)
+plot(y=g.sds,x=log(n.vec,base=10),type="p",
+xlab="log_{10}(n)",ylab="MCSD",main="Monte Carlo SD vs. MC Size")
+getwd()
+pdf("MCSD_plot.pdf")
+plot(y=g.sds,x=log(n.vec,base=10),type="p",
+xlab="log_{10}(m)",ylab="MCSD",main="Monte Carlo SD vs. MC Size")
+dev.off()
+pdf("MCSD_plot.pdf")
+plot(y=g.sds,x=log(n.vec,base=10),type="p",
+xlab="log_{10}(m)",ylab="MCSD",main="Monte Carlo SD vs. MC Size for E[log-gamma]")
+dev.off()
+psigamma(0)
+digamma(0)
+digamma(1)
+wdir <- "~/Dropbox/Documents/Davis_Teaching/Stat_145/Spring_2014/Homeworks/Homework_02/"
+setwd(wdir)
+heights <- read.table("heights.txt",header=T)
+mu0 <- 68.0
+tau0.sq <- 10^2
+sig0.sq <- 4^2
+nu0 <- 10.0
+nsamples <- 50000
+stime <- system.time({
+ss <- sample.sigsq(nsamples=nsamples,y=heights$height,mu0=mu0,nu0=nu0,tau0.sq=tau0.sq,sig0.sq=sig0.sq,do.plot=TRUE)
+})["elapsed"]
+cat(paste("Sampling ",nsamples," draws took ",stime," seconds... (i.e., ",nsamples/stime," samples per second)\n",sep=""))
+print(quantile(ss,p=c(0.025,0.25,0.5,0.75,0.975)))
+source("sigma_sample.R")
+stime <- system.time({
+ss <- sample.sigsq(nsamples=nsamples,y=heights$height,mu0=mu0,nu0=nu0,tau0.sq=tau0.sq,sig0.sq=sig0.sq,do.plot=TRUE)
+})["elapsed"]
+cat(paste("Sampling ",nsamples," draws took ",stime," seconds... (i.e., ",nsamples/stime," samples per second)\n",sep=""))
+print(quantile(ss,p=c(0.025,0.25,0.5,0.75,0.975)))
+library(geoR)
+stime <- system.time({
+ss <- sample.sigsq(nsamples=nsamples,y=heights$height,mu0=mu0,nu0=nu0,tau0.sq=tau0.sq,sig0.sq=sig0.sq,do.plot=TRUE)
+})["elapsed"]
+cat(paste("Sampling ",nsamples," draws took ",stime," seconds... (i.e., ",nsamples/stime," samples per second)\n",sep=""))
+print(quantile(ss,p=c(0.025,0.25,0.5,0.75,0.975)))
+mu.n <- function(sigsq){
+((mu0/tau0.sq)+(sum(y)/sigsq))/((1/tau0.sq)+(length(y)/sigsq))
+}
+tau.n <- function(sigsq){
+1/((1/tau0.sq)+(length(y)/sigsq))
+}
+sample.mu <- rnorm(50000, mu.n(ss), sqrt(tau.n(ss)))
+##question 4.c
+nsamples <- 50000
+sample.mu <- rep(NA, nsamples)
+for(i in 1:nsamples){
+sample.mu[i] <- rnorm(1, mu.n(ss[i]), sqrt(tau.n(ss[i])) )
+}
+z1 <- kde2d(sample.mu, ss)
+pdf("post_contours.pdf")
+contour(z1,xlim=xlim,ylim=ylim,xlab="mu",ylab="sigma^2",main="Posterior contours using MC samples")
+dev.off()
+mu.n <- function(sigsq){
+((mu0/tau0.sq)+(sum(y)/sigsq))/((1/tau0.sq)+(length(y)/sigsq))
+}
+tau.n <- function(sigsq){
+1/((1/tau0.sq)+(length(y)/sigsq))
+}
+sample.mu <- rnorm(50000, mu.n(ss), sqrt(tau.n(ss)))
+##question 4.c
+nsamples <- 50000
+sample.mu <- rep(NA, nsamples)
+for(i in 1:nsamples){
+sample.mu[i] <- rnorm(1, mu.n(ss[i]), sqrt(tau.n(ss[i])) )
+}
+z1 <- kde2d(sample.mu, ss)
+pdf("post_contours.pdf")
+contour(z1,xlim=xlim,ylim=ylim,xlab="mu",ylab="sigma^2",main="Posterior contours using MC samples")
+dev.off()
+persp(z1)
+xlim <- c(67.4,68.0) # c(min(mu.grid),max(mu.grid))
+ylim <- c(6.8,8.6) # c(min(ss.grid),max(ss.grid))
+pdf("post_contours.pdf")
+contour(z1,xlim=xlim,ylim=ylim,xlab="mu",ylab="sigma^2",main="Posterior contours using MC samples")
+dev.off()
+persp(z1)
+head(ss)
+head(mu)
+head(sample.mu)
+heaD(mu.n(ss))
+head(mu.n(ss))
+y
+mu.n <- function(sigsq,y){
+((mu0/tau0.sq)+(sum(y)/sigsq))/((1/tau0.sq)+(length(y)/sigsq))
+}
+tau.n <- function(sigsq,y){
+1/((1/tau0.sq)+(length(y)/sigsq))
+}
+sample.mu <- rnorm(50000, mu.n(ss,y=heights$heights), sqrt(tau.n(ss,y=heights$heights)))
+##question 4.c
+nsamples <- 50000
+sample.mu <- rep(NA, nsamples)
+for(i in 1:nsamples){
+sample.mu[i] <- rnorm(1, mu.n(ss[i]), sqrt(tau.n(ss[i])) )
+}
+z1 <- kde2d(sample.mu, ss)
+xlim <- c(67.4,68.0) # c(min(mu.grid),max(mu.grid))
+ylim <- c(6.8,8.6) # c(min(ss.grid),max(ss.grid))
+pdf("post_contours.pdf")
+contour(z1,xlim=xlim,ylim=ylim,xlab="mu",ylab="sigma^2",main="Posterior contours using MC samples")
+dev.off()
+persp(z1)
+head(mu.samples)
+head(sample.mu)
+mu.n(ss,y=heights$heights)
+length(heights$heights)
+heights$heights
+heights
+head(heights)
+sample.mu <- rnorm(50000, mu.n(ss,y=heights$height), sqrt(tau.n(ss,y=heights$height)))
+##question 4.c
+nsamples <- 50000
+sample.mu <- rep(NA, nsamples)
+for(i in 1:nsamples){
+sample.mu[i] <- rnorm(1, mu.n(ss[i]), sqrt(tau.n(ss[i])) )
+}
+z1 <- kde2d(sample.mu, ss)
+xlim <- c(67.4,68.0) # c(min(mu.grid),max(mu.grid))
+ylim <- c(6.8,8.6) # c(min(ss.grid),max(ss.grid))
+pdf("post_contours.pdf")
+contour(z1,xlim=xlim,ylim=ylim,xlab="mu",ylab="sigma^2",main="Posterior contours using MC samples")
+dev.off()
+persp(z1)
+head(sample.mu)
+head(ss)
+head(mu.n(ss))
+head(mu.n(ss,y=heights$height))
+sample.mu <- rnorm(n=nsamples, mean=mu.n(ss,y=heights$height), sd=sqrt(tau.n(ss,y=heights$height)))
+z1 <- kde2d(sample.mu, ss)
+xlim <- c(67.4,68.0) # c(min(mu.grid),max(mu.grid))
+ylim <- c(6.8,8.6) # c(min(ss.grid),max(ss.grid))
+pdf("post_contours.pdf")
+contour(z1,xlim=xlim,ylim=ylim,xlab="mu",ylab="sigma^2",main="Posterior contours using MC samples")
+dev.off()
+persp(z1)
+print(quantile(sample.mu,p=c(0.025,0.975)))
+astro <- read.table(file="astro.txt",header=TRUE)
+y <- astro$counts
+ybar <- mean(y)
+n <- length(y)
+ybar*n
+prior.alpha <- 0.5
+prior.beta <- 0.0
+# Posterior samples:
+m <- 10000
+post.alpha <- prior.alpha + ybar*n
+post.beta  <- prior.beta + n
+lambda.samples <- rgamma(n=m,post.alpha,post.beta)
+quantile(lambda.samples, probs=c(0.025, 0.975))
+ppc.datasets <- matrix(nrow=m,ncol=n)
+rownames(ppc.datasets) <- paste("PPC_Dataset_",1:m,sep="")
+for (i in 1:m){
+ppc.datasets[i,] <- rpois(n=n,lambda=lambda.samples[i])
+}
+head(ppc.datasets)
+par(mfrow=c(3,3))
+xlim <- c(min(min(y),min(ppc.datasets[1:8,])),max(max(newcomb),max(ppc.datasets[1:8,])))
+truehist(y,xlim=xlim,main="Real Data",col="red")
+for (i in 1:8){
+truehist(ppc.datasets[i,],xlim=xlim,main=paste("Posterior Predictive Dataset ",i,sep=""))
+}
+dev.off()
+# Posterior predictive test statistics:
+nstats <- 5
+ppc.stats.ref <- matrix(NA,nrow=m,ncol=nstats)
+colnames(ppc.stats.ref) <- c("min","max","mean","median","sd")
+for (i in 1:m){
+ppc.stats.ref[i,1] <- min(ppc.datasets[i,])
+ppc.stats.ref[i,2] <- max(ppc.datasets[i,])
+ppc.stats.ref[i,3] <- mean(ppc.datasets[i,])
+ppc.stats.ref[i,4] <- median(ppc.datasets[i,])
+ppc.stats.ref[i,5] <- sd(ppc.datasets[i,])
+}
+ppc.stats.obs <- c("min"=min(y),"max"=max(y),"mean"=mean(y),"median"=median(y),"sd"=sd(y))
+par(mfrow=c(2,3))
+for (i in 1:nstats){
+xlim <- c(min(c(ppc.stats.ref[,i],ppc.stats.obs[i])),max(c(ppc.stats.ref[,i],ppc.stats.obs[i])))
+truehist(ppc.stats.ref[,i],xlim=xlim,nbins=100,
+main=paste("Posterior Predictive Distribution of ",colnames(ppc.stats.ref)[i],sep=""),
+xlab=colnames(ppc.stats.ref)[i])
+abline(v=ppc.stats.obs[i],col="blue")
+}
+par(mfrow=c(3,3))
+xlim <- c(min(min(y),min(ppc.datasets[1:8,])),max(max(newcomb),max(ppc.datasets[1:8,])))
+truehist(y,xlim=xlim,main="Real Data",col="red")
+for (i in 1:8){
+truehist(ppc.datasets[i,],xlim=xlim,main=paste("Posterior Predictive Dataset ",i,sep=""))
+}
+dev.off()
+pdf("post_pred_datasets.pdf")
+par(mfrow=c(3,3))
+xlim <- c(min(min(y),min(ppc.datasets[1:8,])),max(max(newcomb),max(ppc.datasets[1:8,])))
+truehist(y,xlim=xlim,main="Real Data",col="red")
+for (i in 1:8){
+truehist(ppc.datasets[i,],xlim=xlim,main=paste("Posterior Predictive Dataset ",i,sep=""))
+}
+dev.off()
+# Posterior predictive test statistics:
+nstats <- 5
+ppc.stats.ref <- matrix(NA,nrow=m,ncol=nstats)
+colnames(ppc.stats.ref) <- c("min","max","mean","median","sd")
+for (i in 1:m){
+ppc.stats.ref[i,1] <- min(ppc.datasets[i,])
+ppc.stats.ref[i,2] <- max(ppc.datasets[i,])
+ppc.stats.ref[i,3] <- mean(ppc.datasets[i,])
+ppc.stats.ref[i,4] <- median(ppc.datasets[i,])
+ppc.stats.ref[i,5] <- sd(ppc.datasets[i,])
+}
+ppc.stats.obs <- c("min"=min(y),"max"=max(y),"mean"=mean(y),"median"=median(y),"sd"=sd(y))
+pdf("post_pred_pvalues.pdf")
+par(mfrow=c(2,3))
+for (i in 1:nstats){
+xlim <- c(min(c(ppc.stats.ref[,i],ppc.stats.obs[i])),max(c(ppc.stats.ref[,i],ppc.stats.obs[i])))
+truehist(ppc.stats.ref[,i],xlim=xlim,nbins=100,
+main=paste("Posterior Predictive Distribution of ",colnames(ppc.stats.ref)[i],sep=""),
+xlab=colnames(ppc.stats.ref)[i])
+abline(v=ppc.stats.obs[i],col="blue")
+}
+dev.off()
+head(sample.sigsq(50000, heights$height, 68, 100, 10, 16))
+head(sample.sigsq(500, heights$height, 68, 100, 10, 16))
+read.table
+read.table("heights.txt")
+foo = read.table("heights.txt")
+head(foo)
+q()

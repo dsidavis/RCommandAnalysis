@@ -1,0 +1,554 @@
+"","x"
+"1","# BOOTCAMP BY DATA SCIENCE INTITIATIVE
+"
+"2","# DAY 1
+"
+"3","
+"
+"4","# by Deb and Duncan
+"
+"5","
+"
+"6","##############################       SET WORKING DIRECTORY             ###############################################
+"
+"7","setwd(""/Users/ID002/Documents/Data Science/workshop/data"")
+"
+"8","
+"
+"9","# install GIT, set up new projects on git (version control)
+"
+"10","# https:// githut.com/dsidavis/Rexamples
+"
+"11","# way of copying different version of files from the web
+"
+"12","# github account
+"
+"13","# used as backup data
+"
+"14","
+"
+"15","# Cancel comands in the console using command/control + C or ESC
+"
+"16","
+"
+"17","# Caplitalization Matters
+"
+"18","
+"
+"19","###########################           CREATE A VAR        ###########################################################
+"
+"20","24/37
+"
+"21","temp = 24/37
+"
+"22","temp
+"
+"23","typeof(temp) # what kind of variable is temp?
+"
+"24","
+"
+"25","temp2 = ""ThisisText""
+"
+"26","typeof(temp2)
+"
+"27","
+"
+"28","temp != temp2 # != not equal
+"
+"29","
+"
+"30","# COMPARE THINGS
+"
+"31","
+"
+"32","5 == 5  # equal
+"
+"33","5 != 5  # not equal
+"
+"34","4 <= 5  # less than or equal to
+"
+"35","5 > 4   # greater than
+"
+"36","
+"
+"37","tmp = 24/37
+"
+"38","tmp2 = 23.999999999/37
+"
+"39","tmp2
+"
+"40","tmp == tmp2 # Are these two numbers really equal? (don't compare real numbers)
+"
+"41","
+"
+"42","# READ DATA
+"
+"43","
+"
+"44","simpleDat <- read.table(file=""SimpleDat.csv"", sep = "","", header = TRUE)
+"
+"45","head(simpleDat)
+"
+"46","# change the working directory to workshop/data, then read SimpleDat
+"
+"47","dim(simpleDat) # dimensions of the data Rows and Columns
+"
+"48","nrow(simpleDat) # double check
+"
+"49","ncol(simpleDat)
+"
+"50","colnames(simpleDat) # header
+"
+"51","
+"
+"52","#simpleDat is a subset of a real data
+"
+"53","
+"
+"54","str(simpleDat) # structure
+"
+"55","class(simpleDat) # look at data type-data.frame / vector/ number / list /function
+"
+"56","is.data.frame(simpleDat)
+"
+"57","#as.data.frame() # treat something as data frame
+"
+"58","
+"
+"59","# GETTING INFO ON FACTORS
+"
+"60","# factors store categorical data
+"
+"61","levels(simpleDat$TERM_CODE) # show how many levels are coded for factors
+"
+"62","                            # $ pulls one variable only
+"
+"63","attributes(simpleDat$TERM_CODE)
+"
+"64","
+"
+"65","# ordering factors
+"
+"66","tmp = simpleDat$TERM_CODE
+"
+"67","tmp
+"
+"68","attributes(tmp)
+"
+"69","levels(tmp)
+"
+"70","tmp = ordered(tmp, levels = c(""W"", ""S"", ""F"")) # now W < S < F
+"
+"71","tmp
+"
+"72","levels(tmp) # helps with the plot
+"
+"73","str(tmp)
+"
+"74","
+"
+"75","tmp = subset(simpleDat, TERM_CODE == ""W"" | TERM_CODE == ""S"")
+"
+"76","table(tmp$TERM_CODE) 
+"
+"77","levels(tmp$TERM_CODE)
+"
+"78","
+"
+"79","droplevels(tmp) # make sure it is correct, then assign to the your data
+"
+"80","tmp = droplevels(tmp) # drop category which have only 0s 
+"
+"81","                      # advised NOT to do this
+"
+"82","
+"
+"83","# MOVE AROUND IN DATA-- SUBSETTING THE DATA
+"
+"84","
+"
+"85","simpleDat[1:3, ] # drawing three row
+"
+"86","head(simpleDat)
+"
+"87","simpleDat[,2]
+"
+"88","simpleDat[1:3] # drawing three columns
+"
+"89","typeof(simpleDat[1:3]) # made a another list??
+"
+"90","simpleDat[, ""TERM_CODE""] # recommended to use variable names
+"
+"91","
+"
+"92","simpleDat[1:2]
+"
+"93","# c(1,2) combine 1 and 2
+"
+"94","
+"
+"95","simpleDat[1,2]
+"
+"96","
+"
+"97","a = simpleDat[1,2:3]
+"
+"98","class (a)
+"
+"99","# a more complex way of drawing data compared to $ which only draws one column
+"
+"100","# compare TERM_CODE row1 and row5
+"
+"101","simpleDat[1, ""TERM_CODE""] == simpleDat[5, ""TERM_CODE""]
+"
+"102","simpleDat[c(1:2, 4:10), ]
+"
+"103","simpleDat[c(1,7,2), c(""College"", ""ACAD_YR"")]
+"
+"104","# check every line of code -- see each bit does before you assign them to data
+"
+"105","# try SEQC
+"
+"106","
+"
+"107","# LET'S CLEAN UP
+"
+"108","
+"
+"109","ls()
+"
+"110","rm(a) # remove variable a
+"
+"111","
+"
+"112","# EXPLORATORY DATA ANALYSIS
+"
+"113","
+"
+"114","str(simpleDat) # structure
+"
+"115","summary(simpleDat) # equivalent as sum in stata
+"
+"116","summary(simpleDat$subj)
+"
+"117","table(simpleDat$subj)
+"
+"118","
+"
+"119","table(simpleDat$section)
+"
+"120","summary(simpleDat$section)
+"
+"121","
+"
+"122","# RECODE
+"
+"123","
+"
+"124","# recode the A00 and B00 sections to 001; i.e., you are only intersted in single section class
+"
+"125","simpleDat$new.section[simpleDat$section == ""A00""] = ""001"" # this recode will add a new column
+"
+"126","summary(simpleDat)
+"
+"127","head(simpleDat)
+"
+"128","simpleDat$new.section[simpleDat$section == 'B00'] = ""001"" 
+"
+"129","head(simpleDat)
+"
+"130","# give you NAs, may lose data
+"
+"131","
+"
+"132","simpleDat$new.section = simpleDat$section
+"
+"133","simpleDat$new.section[simpleDat$Section == ""A00"" | simpleDat$Section == ""B00"" ] = ""001""
+"
+"134","head(simpleDat)
+"
+"135","
+"
+"136","# excercise
+"
+"137","simpleDat$total.new = simpleDat$tot.enroll
+"
+"138","simpleDat$total.new[simpleDat$total.new <= 100] = 0 # notice here the sequence of these two lines matter
+"
+"139","simpleDat$total.new[simpleDat$total.new  > 100] = 1 #
+"
+"140","summary(simpleDat$total.new)
+"
+"141","
+"
+"142","summary(simpleDat$tot.enroll)
+"
+"143","
+"
+"144","# a different way of coding
+"
+"145","simpleDat$total.new = 0
+"
+"146","simpleDat$total.new[simpleDat$tot.enroll  > 100] = 1 # remmeber to use the original vector to describe the new one
+"
+"147","table(simpleDat$total.new)
+"
+"148","
+"
+"149","# chekcing the data first
+"
+"150","simpleDat$tot.enroll > 100
+"
+"151","table(simpleDat$tot.enroll > 100) # '' is only for strings
+"
+"152","
+"
+"153","# by the way, don't use pipe
+"
+"154","
+"
+"155","# DROP A VECTOR/ COLUMN
+"
+"156","
+"
+"157","simpleDat = simpleDat[, -9] # drop 9th vector
+"
+"158","# another way to drop the vector
+"
+"159","# match('TERM_CODE', names(simpleDat)) # find the vector collumn
+"
+"160","# simpleDat = simpleDat[, -2] # drop the column
+"
+"161","
+"
+"162","'new' == names(simpleDat) # check the name of your variable with the existing dataset
+"
+"163","simpleDat['new' == names(simpleDat)] 
+"
+"164","
+"
+"165","# HOW TO DEAL WITH NAs?
+"
+"166","
+"
+"167","ytmp = c(5, 4, 8, NA)
+"
+"168","ytmp + 1
+"
+"169","sum(ytmp) # with NA, you cannot sum them up; add them up
+"
+"170","
+"
+"171","is.na(ytmp) # check which one is NA
+"
+"172","ytmp == NA
+"
+"173","mean(ytmp)
+"
+"174","?mean
+"
+"175","# remove an NA
+"
+"176","mean(ytmp [! is.na(ytmp)])
+"
+"177","mean(ytmp, na.rm = TRUE)
+"
+"178","sum(ytmp, na.rm = TRUE)
+"
+"179","table(ytmp)
+"
+"180","
+"
+"181","# NAN means not a number
+"
+"182","# http://factulty.nps.edu/sebuttre/home/R/missing.html --check how to deal with missing data
+"
+"183","
+"
+"184","# DON'T remove NAs globally 
+"
+"185","# singlesect = na.omit(simpleDat)
+"
+"186","# dim(singlesect)
+"
+"187","
+"
+"188","# GETTING RID OF 0000 s
+"
+"189","head(simpleDat)
+"
+"190","simpleDat$new.course = simpleDat$course
+"
+"191","simpleDat$new.course[1:50]
+"
+"192","nchar(as.character(simpleDat$new.course)) # check how many characters of each string in the data
+"
+"193","# if data is all 001 
+"
+"194","substr(simpleDat$new[1:50, 3, 3]) # start at the third position, end at the third position
+"
+"195","                                  # substring
+"
+"196","
+"
+"197","# SUBSETTING DATA AGAIN
+"
+"198","not.CAES = simpleDat[simpleDat$College != ""CA&ES"",]
+"
+"199","table(not.CAES$College)
+"
+"200","
+"
+"201","# droplevels -- do not drop a vector
+"
+"202","?droplevels
+"
+"203","simpleDat$new = simpleDat$enr.group
+"
+"204","droplevels(not.CAES$College)
+"
+"205","
+"
+"206","head(simpleDat)
+"
+"207","simpleDat = simpleDat[, -9] # drop recoded variables previously generated
+"
+"208","
+"
+"209","tot100 = subset(simpleDat, tot.enroll > 100)
+"
+"210","summary(tot100)
+"
+"211","
+"
+"212","# excercise
+"
+"213","tmp = subset(simpleDat, tot.enroll > 50 & College == ""DSS"" | College == ""MPS"")
+"
+"214","summary(tmp) 
+"
+"215","
+"
+"216","# when error says not found, check variable type, in this case, DSS is a str, needs parantheses
+"
+"217","rm(a.variable.name)
+"
+"218","
+"
+"219","# warning
+"
+"220","#%in% # are you a member of the set c(""MPS"", ""DSS"")
+"
+"221","  
+"
+"222","  # TREAT WARNING AS AN ERROR!!
+"
+"223","
+"
+"224","#####################################################################################################################
+"
+"225","#                                        DATA VISUALIZATION        
+"
+"226","#####################################################################################################################
+"
+"227","
+"
+"228","library(ggplot2) # put it right up at the top, add versions and why 
+"
+"229","
+"
+"230","# structure of ggplot2
+"
+"231","# data variables (column1 -4) scales aesthetics (x y size alpha) geometry/stat
+"
+"232","#           data                     color, shape, size          lines, points, bars
+"
+"233","#           data                    aes                          geom, scale, stat
+"
+"234","
+"
+"235","
+"
+"236","my_data = data.frame(x = rnorm(n = 150, mean = 60, sd = 20), 
+                     y = rnorm(n = 150, mean = 5, sd = 20))  # remember to check spelling, and highlight both lines)
+"
+"237","my_data = subset(my_data, y > 0)
+"
+"238","
+"
+"239","p = ggplot(my_data, aes(x = x, y = y )) +
+  geom_point(shape = 1) 
+"
+"240","p
+"
+"241","  
+"
+"242","p = ggplot(my_data, aes(x = x, y = y )) +
+  geom_point(shape = 1) +
+  geom_smooth(method = ""loess"", formula = y ~ x, se = FALSE, colour = ""black"")
+"
+"243","p
+"
+"244","
+"
+"245","p = ggplot(my_data, aes(x = x, y = y )) +
+  geom_point(shape = 1) +
+  geom_smooth(method = ""loess"", formula = y ~ x, se = FALSE, colour = ""black"") +
+  scale_x_continous (breaks = seq(0, 100, 20), limits = c(0, 120)) + 
+  scale_y_continous (breaks = seq(0, 40, 10)) +
+  labs(x = ""Number of Elements"", y = ""Average Time (minutes)"") +
+  ggtitle(""Loess Fit"") 
+"
+"246","p
+"
+"247","
+"
+"248","p = ggplot(my_data, aes(x = x, y = y )) +
+  geom_point(shape = 1) +
+  geom_smooth(method = ""loess"", formula = y ~ x, se = FALSE, colour = ""black"") +
+  scale_x_continous(breaks = seq(0, 100, 20), limits = c(0, 120)) + 
+  scale_y_continous(breaks = seq(0, 40, 10)) +
+  labs(x = ""Number of Elements"", y = ""Average Time (minutes)"") +
+  ggtitle(""Loess Fit"") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        plot.title = element_text(size = rel(1.5), face = ""bold"", vjust = 1.5 ))
+"
+"249","  
+"
+"250","# BOXPLOT
+"
+"251","ggplot(data=simpleDat, aes(x = College, y = tot.enroll, group = College)) + geom_boxplot() + ylab(""Class Size"")
+"
+"252","
+"
+"253","# add mean to boxplot
+"
+"254","ggplot(data=simpleDat, aes(x = College, y = tot.enroll, group = College)) + 
+  geom_boxplot() + ylab(""Class Size"") + 
+  stat_summary(fun.y = mean, geom = ""pointrange"")
+"
+"255","
+"
+"256","
+"
+"257","# VIOLIN PLOT
+"
+"258","ggplot(data = simpleDat, aes(x = College, y = tot.enroll, group = College)) +
+  geom_violin() + ylab(""Class Size"")
+"
+"259","
+"
+"260","ggplot(data = simpleDat, aes(x = College, y = tot.enroll, group = College)) +
+  geom_violin() + ylab(""Class Size"") +
+  geom_point(shape = 10)
+"
+"261","
+"
+"262","
+"
+"263","
+"
+"264","
+"
