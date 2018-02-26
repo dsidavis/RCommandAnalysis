@@ -52,10 +52,27 @@ plot(rnorm(log(abs(x))))
 So there are 4 functions being called here.
 
 
-
 Comments are identified in the comment column.
 When comment is `NA`, the functions column should have a value.
 
 This could be more general and we can compute
 lots of other interesting information from the
 info parameter in longDF().
+
+
+How many comments are there?
+```
+table(sapply(exprs, is, "Comment"))
+```
+We can also compute this from the data frame with
+```
+table(!is.na(df$comment))
+```
+
+## Reading a CSV file of Code.
+```r
+f = system.file("sampleCode", "p1raw.csv", package = "RCommandAnalysis")
+exprs = readCode(f)
+df = longDF(exprs)
+dim(df)
+```

@@ -68,7 +68,7 @@ function(info, lineNum)
               data.frame(lineNum = lineNum, comment = unclass(info@code), "functions" = as.character(NA), stringsAsFactors = FALSE)
           else {
               n = length(info@functions)  
-              data.frame(lineNum = rep(lineNum, ),
+              data.frame(lineNum = rep(lineNum, n),
                          comment = rep(as.character(NA), n),
                          functions = names(info@functions),
                          stringsAsFactors = FALSE)
