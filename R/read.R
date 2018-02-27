@@ -124,3 +124,17 @@ function(df)
 
     list(code = ex, comments = comments)
 }
+
+
+
+
+getComments =
+function(x, ...)
+   UseMethod('getComments')
+
+getComments.data.frame =
+function(x, ...)
+{
+    com = x$isInlineComment | x$isComment
+    gsub("^[^#]*#", "#", x$src[com])
+}
