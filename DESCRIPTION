@@ -2,4 +2,8 @@ Package: RHistoryAnalysis
 Version: 0.1-0
 Title: Analyze R History Files
 Description: Functionality to query aspects of an R session.
+Imports: evaluate
+Author: Duncan Temple Lang
+Maintainer: <duncan@r-project.org>
+License: BSD_3_clause
 

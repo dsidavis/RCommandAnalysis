@@ -1,0 +1,10 @@
+importFrom(evaluate, parse_all)
+
+
+export(readCode)
+S3method(readCode, character)
+S3method(readCode, data.frame)
+export(longDF, longDF2)
+export(getComments)
+
+
