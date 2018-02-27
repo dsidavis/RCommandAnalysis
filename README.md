@@ -86,15 +86,16 @@ The code I just pushed has the information for each of your 2 tables aggregated 
 
 Let's start with
 ```r
-df = longDF(readCode("eg1"))
+w = readCode("inlineComments")
 ```
 
-We can put the file/person identifier into the data frame with
+Now we extract the two tables - one for code and the other for the comments
 ```r
-df = longDF(readCode("eg1"), id = "001")
+w2 = longDF2(w)
 ```
-or 
+
 ```r
-df$ID = "001"
+sapply(w2, class)
+sapply(w2, dim)
 ```
 
