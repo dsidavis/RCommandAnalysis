@@ -34,6 +34,7 @@ function(f, asDataFrame = TRUE, ...)
     if(asDataFrame) {
         f$isInlineComment = isInlineComment
         f$isComment = !isInlineComment & hasCommentText
+        f$lineNum = seq(length = nrow(f))
         f
     } else 
         structure(f[[2]], class = "list")
@@ -75,12 +76,12 @@ longDF =
     # id - identifier for the file.
     #   If not provided, no column for id is created.
     #
-function(exprs, exprInfo = lapply(exprs, getInputs), id = character(), ...)    
+function(exprs, exprInfo = lapply(exprs, getInputs), lineNums = seq(along = exprInfo),
+         id = character(), ...)    
 {
     #    ans = data.frame(comment = rep(NA, length(exprs)))
 
-    tmp = lapply(seq(along = exprInfo),
-                  function(i) expandLine(exprInfo[[i]], i))
+    tmp = mapply(expandLine, exprInfo, lineNums, SIMPLIFY = FALSE)
     
     ans = do.call(rbind, tmp)
 
@@ -107,3 +108,19 @@ function(info, lineNum)
 
 trim = function (x) 
 gsub("(^[[:space:]]+|[[:space:]]+$)", "", x)
+
+
+
+longDF2 =
+function(df)
+{
+       # Extract the comments into their own data frame
+    com = df$isInlineComment | df$isComment
+    comments = df[com, ]
+
+      # Deal with the non-comments
+    e = df[!df$isComment,]
+    ex = longDF(e$expr, lineNums = e$lineNum)
+
+    list(code = ex, comments = comments)
+}

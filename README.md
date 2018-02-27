@@ -76,3 +76,25 @@ exprs = readCode(f)
 df = longDF(exprs)
 dim(df)
 ```
+
+
+
+
+# Two Tables
+
+The code I just pushed has the information for each of your 2 tables aggregated into a single table.
+
+Let's start with
+```r
+df = longDF(readCode("eg1"))
+```
+
+We can put the file/person identifier into the data frame with
+```r
+df = longDF(readCode("eg1"), id = "001")
+```
+or 
+```r
+df$ID = "001"
+```
+

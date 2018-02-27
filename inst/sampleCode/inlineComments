@@ -2,7 +2,7 @@
 a = 1
 b = 2
 c = 3 # not a good name for a variable
-a+b; 1+2
+a+b; 1-2
 1 #
 2 # two comments and # again
 (a+b)*c
