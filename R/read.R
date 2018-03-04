@@ -55,7 +55,11 @@ function(f, ...)
     } else {
         con = file(f)
         on.exit(close(con))
-        e = parseAll(con)
+        e = tryCatch(evaluate::parse_all(f),
+                     error = function(e, ...) {
+                                parseAll(f)
+                              })
+#        e = parseAll(con)
     }
     
     readCode(e, ...)
