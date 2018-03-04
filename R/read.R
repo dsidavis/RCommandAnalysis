@@ -81,7 +81,10 @@ function(txt)
     else
         tryCatch(parse(text = txt),
                  error = function(err, ...) {
-                     structure(txt, class = if(grepl("unexpected end of input", err$message)) "IncompleteRCode" else "MalformedRCode")
+                     structure(txt, class = if(grepl("unexpected end of input", err$message))
+                                               "IncompleteRCode"
+                                            else
+                                               "MalformedRCode")
                  })
 }
 
