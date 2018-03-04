@@ -17,7 +17,7 @@ function(f, asDataFrame = TRUE, ...)
 
      # remove empty rows, i.e. the src or the expression is empty.
      # in other words, keep any row for which either is non-empty.
-    elen = sapply(f[[2]], function(x) length(x[[1]]))
+    elen = sapply(f[[2]], function(x) if(length(x) == 1) length(x[[1]]) else x)
     f = f[f[[1]] != "" | elen > 0,]
 
      # Figure out the inline and the "pure" comments (i.e with no code)
@@ -52,8 +52,11 @@ function(f, ...)
     if(grepl("\\.csv$", f)) {
         tmp = read.csv(f, header = FALSE, stringsAsFactors = FALSE)
         e = evaluate::parse_all(tmp[[2]])
-    } else
-        e = parseAll(file(f))
+    } else {
+        con = file(f)
+        on.exit(close(con))
+        e = parseAll(con)
+    }
     
     readCode(e, ...)
 }
