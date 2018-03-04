@@ -81,7 +81,7 @@ function(txt)
     else
         tryCatch(parse(text = txt),
                  error = function(err, ...) {
-                     structure(txt, class = "MalformedRCode")
+                     structure(txt, class = if(grepl("unexpected end of input", err$message)) "IncompleteRCode" else "MalformedRCode")
                  })
 }
 
@@ -134,7 +134,7 @@ function(info, lineNum)
 }
 
 trim = function (x) 
-gsub("(^[[:space:]]+|[[:space:]]+$)", "", x)
+          gsub("(^[[:space:]]+|[[:space:]]+$)", "", x)
 
 
 
@@ -165,3 +165,7 @@ function(x, ...)
     com = x$isInlineComment | x$isComment
     gsub("^[^#]*#", "#", x$src[com])
 }
+
+
+
+
