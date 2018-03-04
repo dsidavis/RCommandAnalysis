@@ -53,9 +53,29 @@ function(f, ...)
         tmp = read.csv(f, header = FALSE, stringsAsFactors = FALSE)
         e = evaluate::parse_all(tmp[[2]])
     } else
-        e = evaluate::parse_all(file(f))
+        e = parseAll(file(f))
     
     readCode(e, ...)
+}
+
+parseAll =
+function(con)
+{
+    ll = readLines(con)
+    ans = lapply(ll, parseLine)
+    data.frame(src = ll, expr = I(ans))
+}
+
+parseLine =
+function(txt)
+{
+    if(grepl("^[[:space:]]*#", txt))
+        Comment(txt)
+    else
+        tryCatch(parse(text = txt),
+                 error = function(err, ...) {
+                     structure(txt, class = "MalformedRCode")
+                 })
 }
 
 Comment =
