@@ -17,7 +17,7 @@ function(f, asDataFrame = TRUE, ...)
 
      # remove empty rows, i.e. the src or the expression is empty.
      # in other words, keep any row for which either is non-empty.
-    elen = sapply(f[[2]], function(x) if(length(x) == 1) length(x[[1]]) else x)
+    elen = sapply(f[[2]], function(x) if(length(x) == 1) length(x[[1]]) else length(x))
     f = f[f[[1]] != "" | elen > 0,]
 
      # Figure out the inline and the "pure" comments (i.e with no code)
@@ -53,9 +53,9 @@ function(f, ...)
         tmp = read.csv(f, header = FALSE, stringsAsFactors = FALSE)
         e = evaluate::parse_all(tmp[[2]])
     } else {
-        con = file(f)
+        con = file(f, "r")
         on.exit(close(con))
-        e = tryCatch(evaluate::parse_all(f),
+        e = tryCatch(evaluate::parse_all(con),
                      error = function(e, ...) {
                                 parseAll(f)
                               })
