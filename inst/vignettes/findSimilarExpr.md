@@ -53,3 +53,29 @@ z = findSimilarExpr(10000, rw)
 ```
 
 
+
+
+## Customizable
+
+We can use the `compare` parameter to customize how
+we compare two expressions.
+We can use identical() and this will require that the expressions be identical
+in every way.
+
+We default to isEquiv(). This is a new function we introduced and
+this, for objects of class call, only compares the arguments
+passed in the first. So this would identify the following calls as equivalent:
+```
+rnorm(10, 1)
+rnorm(10, mean = 1)
+rnorm(10, mean = 1, 3)
+```
+But this is not symmetric as it only checks the arguments in the first.
+```
+isEquiv(quote(rnorm(10, mean = 1, 2)), quote(rnorm(10, 1)))
+```
+
+We probably will change isEquiv() so that we check the default values.
+But the key point is that we can provide our own functions to define
+what we mean by equivalent.
+

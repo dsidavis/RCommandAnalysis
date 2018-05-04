@@ -1,5 +1,5 @@
 findSimilarExpr = 
-function(e, h)
+function(e, h, compare = isEquiv, ...)
 {
 
     if(is(e, "MalformedRCode") || is(e, "IncompleteRCode")) {
@@ -67,24 +67,22 @@ function(e, h)
         e = match.call(fun, e)
         calls = lapply(h$tmp, function(x) match.call(fun, x))
 
-        w = sapply(calls, identical, e)
+        w = sapply(calls, compare, e, ...)
         if(any(w))
             return(h[w, names(h) != "tmp"])
 
         # so none are identical, find close ones.
         # 
-    } else if(is.name(e)) {
-        w = sapply(h$tmp, identical, e)
-
-        if(any(w))
-            return(h[w, names(h) != "tmp"])                   
-    } else if(is.literal(e))  {
-
-        w = sapply(h$tmp, identical, e)
+    } else if(is.name(e) || is.literal(e)) {
+        w = sapply(h$tmp, compare, e, ...)
 
         if(any(w))
             return(h[w, names(h) != "tmp"])                   
     }
+    # function
+    # while
+    # for
+    # Probably just fold directly into the condition above for is.name()...
     
 
 }
@@ -94,4 +92,43 @@ is.literal =
 function(x)
 {
     is.character(x) || is.logical(x) || is.integer(x) || is.numeric(x) || is.complex(x)
+}
+
+
+setGeneric("isEquiv", 
+function(x, y, ...)
+{
+  standardGeneric("isEquiv")
+})
+
+
+setMethod("isEquiv", c("ANY", "ANY"),
+function(x, y, ...)
+{
+    identical(x, y, ...)
+})
+
+
+setOldClass("call")
+setMethod("isEquiv", c("call", "call"),
+function(x, y, matched = FALSE, ...)
+{
+    if(x[[1]] != y[[1]])
+        return(FALSE)
+    
+    if(!matched) {
+        fn = get(as.character(x[[1]]), globalenv())
+        x = match.call(fn, x)
+        y = match.call(fn, y)        
+    }
+
+    w = mapply(isEquiv, y[names(x)[-1]], x[-1], ...)
+    all(w)
+})
+
+
+if(FALSE) {
+isEquiv(quote(rnorm(10, 1)), quote(rnorm(10, mean = 1)))
+
+isEquiv(quote(rnorm(10, 1)), quote(rnorm(10, mean = 1, 2)))
 }
