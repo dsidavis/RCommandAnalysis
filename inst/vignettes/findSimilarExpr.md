@@ -8,11 +8,27 @@ deb = readRDS("DebsCode.rds")
 
 We load the information from all of the students history files into R
 already processed by RHistoryAnalysis. This is `rw`.
+```
+rw = readRDS("baseRaw.rds")
+```
 This is a single data.frame with columns ID, date, src, expr, isInlineComment, isComment, lineNum.
 We'll pull out one student - ID == 31 and the first day of the workshop
 ```
 s31 = rw[ rw$ID==31 & rw$date == 19,]
 ```
+To make other computations easier later on, we will add a column
+which gives the command number for a student.
+```
+s31$cmdNum = seq(length = nrow(s31))
+```
+When we get a particular row back from our functions,
+we now can determine where it came from in the original data
+frame. ( We could also use the original row names.)
+(We also have this in lineNum, but is that exactly the same thing.)
+The reason we want this is to be able to find the all the
+rows after this one, but before the next entirely different command,
+i.e., find the rows in the data frame that are related to the same command,
+as varitions of the same command.
 
 
 We'll start with an interesting command in Deb's code:
@@ -78,4 +94,8 @@ isEquiv(quote(rnorm(10, mean = 1, 2)), quote(rnorm(10, 1)))
 We probably will change isEquiv() so that we check the default values.
 But the key point is that we can provide our own functions to define
 what we mean by equivalent.
+
+
+
+
 
