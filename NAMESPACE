@@ -1,5 +1,5 @@
 importFrom(evaluate, parse_all)
-
+import(CodeDepends)
 
 export(readCode)
 S3method(readCode, character)

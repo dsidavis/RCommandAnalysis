@@ -6,4 +6,5 @@ Imports: evaluate
 Author: Duncan Temple Lang
 Maintainer: <duncan@r-project.org>
 License: BSD_3_clause
+Imports: CodeDepends
 
