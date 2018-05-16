@@ -110,7 +110,7 @@ function(exprs, exprInfo = NULL, lineNums = seq(along = exprInfo),
          id = character(), dropBad = TRUE, ...)    
 {
     #    ans = data.frame(comment = rep(NA, length(exprs)))
-browser()
+
     if(missing(exprInfo)) {
         exprInfo = lapply(exprs, function(x) try(getInputs(x), silent = TRUE))
         bad = sapply(exprInfo, is, 'try-error')
