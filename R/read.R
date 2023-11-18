@@ -106,10 +106,20 @@ longDF =
     # id - identifier for the file.
     #   If not provided, no column for id is created.
     #
-function(exprs, exprInfo = lapply(exprs, getInputs), lineNums = seq(along = exprInfo),
-         id = character(), ...)    
+function(exprs, exprInfo = NULL, lineNums = seq(along = exprInfo),
+         id = character(), dropBad = TRUE, ...)    
 {
     #    ans = data.frame(comment = rep(NA, length(exprs)))
+
+    if(missing(exprInfo)) {
+        exprInfo = lapply(exprs, function(x) try(getInputs(x), silent = TRUE))
+        bad = sapply(exprInfo, is, 'try-error')
+        if(dropBad)
+            exprInfo = exprInfo[!bad]
+        else {
+            exprInfo[bad] = lapply(exprs[bad], function(x) new("ScriptNodeInfo", code = Comment(paste(deparse(x), collapse = " "))))
+        }
+    }
 
     tmp = mapply(expandLine, exprInfo, lineNums, SIMPLIFY = FALSE)
     
